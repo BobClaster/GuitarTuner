@@ -73,17 +73,41 @@ ISR(ADC_vect) {//when new ADC value ready
   timer++;//increment timer at rate of 38.5kHz
 }
 
+int what_is_the_note(int frq) {
+  int chord[6] = {330, 247, 196, 147, 110, 82};
+  int nota = 0;
+  int sub_frq = 1000;
+
+  for (int i=0; i<6; i++) {
+    int sub = abs(chord[i] - frq);
+    if (sub < sub_frq) {
+      sub_frq = sub;
+      nota = i;
+    }
+  }
+  
+  return nota;
+}
+
 void loop(){
   if (clipping){//if currently clipping
     PORTB &= B11011111;//turn off clippng indicator led
     clipping = 0;
   }
+  char nota = "";
+  
 
   frequency = 38462/period/15.865;//timer rate/period
-  //print results
-//  lcd.setCursor(16, 0);
+
+  if(what_is_the_note(frequency)==5) nota = 'E';
+  if(what_is_the_note(frequency)==4) nota = 'A';
+  if(what_is_the_note(frequency)==3) nota = 'd';
+  if(what_is_the_note(frequency)==2) nota = 'g';
+  if(what_is_the_note(frequency)==1) nota = 'b';
+  if(what_is_the_note(frequency)==0) nota = 'e';
+  
   lcd.clear();
-  lcd.print(frequency);
+  lcd.print(nota);
 //  Serial.print(frequency);
 //  Serial.println(" hz");
   
